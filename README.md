@@ -9,7 +9,7 @@ without a GPU** — two to three orders of magnitude faster (per frame) than a s
 synthesizer — so it can sit inside a closed-loop reinforcement-learning acquisition simulator, where a
 new frame must be rendered at every agent step.
 
-📄 The paper (LNCS, SASHIMI-format) is in [`paper/main.pdf`](paper/main.pdf).
+📄 The paper (LNCS format) is in [`paper/main.pdf`](paper/main.pdf).
 
 ---
 
@@ -32,11 +32,10 @@ a region and only *its* texture changes.
 | Whole-frame **FID/KID** | loses *by design* | wins | these reward the global recolor SonoSPADE does not perform |
 | **Latency** (CPU / iGPU, single pass) | **66 / 12 ms** | ~same | diffusion is 133×–665× slower **per frame** at standard T |
 | **Downstream TSTR** (train-on-synthetic Dice) | overtakes raw render on every seed | — | only after matching sector geometry + test-time adaptation; absolute Dice stays low |
-| **In-the-loop liver acquisition** (ground-truth, 3 seeds) | **highest, 3/3 seeds** | tie/below | a *small, liver-only* proof of concept — see below |
 
-Summary figures: [`assets/premise_summary.png`](assets/premise_summary.png),
-[`assets/organ_rl_summary.png`](assets/organ_rl_summary.png). Full honest write-up of the closed-loop
-experiments (including what does **not** work): [`docs/PREMISE_CHECK_RESULT.md`](docs/PREMISE_CHECK_RESULT.md).
+All numbers are on the **public** [Kaggle *ussimandsegm* (Vitale et al.)](https://www.kaggle.com/datasets/ignaciorlando/ussimandsegm)
+abdominal ultrasound set, with simulator content from open [TotalSegmentator](https://github.com/wasserthal/TotalSegmentator)
+CT (see [Data](#data)).
 
 ## Repository layout
 
@@ -47,13 +46,11 @@ src/usbg/            the SonoSPADE code (package name `usbg` = the closed-loop U
   texture_eval.py      per-tissue metrics (locality, organ-W1, speckle SNR, TSTR)
   volume.py            CT → canonical tissue label volume + acoustic tables
   render_lotus.py      label slice → physics B-mode (pure torch/numpy; the SonoSPADE substrate)
-  slicer.py            probe pose → 2D label slice
+  slicer.py, placement.py   probe pose → 2D label slice; organ-centred pose seating
   _vendor/             self-contained SE(3) geometry + scan geometry (vendored; no external repo needed)
-  (mujoco_env, goal_rl, placement, policy, rl ... : the closed-loop acquisition environment)
 scripts/             training, evaluation, and experiment drivers
-  premise/             the per-tissue reward-viability check + organ-conditioned RL experiment
 paper/               LNCS source + compiled PDF (main.pdf)
-docs/                SONOSPADE.md (method notes), PREMISE_CHECK_RESULT.md (closed-loop results)
+docs/                SONOSPADE.md (method notes)
 configs/             sonospade.yaml (hyperparameters)
 data/                README with data-download / regeneration instructions (data itself not shipped)
 ```
@@ -62,8 +59,8 @@ data/                README with data-download / regeneration instructions (data
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
-pip install -e .                # core (texture synthesis + evaluation)
-pip install -e ".[rl,viz]"      # + closed-loop env (mujoco) + figures
+pip install -e .            # core (texture synthesis + evaluation)
+pip install -e ".[viz]"     # + figures / previews
 ```
 Runs on CPU or Apple-Silicon MPS (`export PYTORCH_ENABLE_MPS_FALLBACK=1`); no discrete GPU required.
 The import package is `usbg`; SonoSPADE is `usbg.texture_gan` (+ `usbg.segmenter`).
@@ -81,10 +78,13 @@ son  = load_translator("data/dataset/exp_real_sonospade.pt")   # after training 
 real_like = son.translate_aligned(phys, lab)           # per-tissue-textured frame
 ```
 
-## Reproduce the paper
+## Data
 
-See [`data/README.md`](data/README.md) to obtain the Kaggle Vitale real set and TotalSegmentator CT.
-Then:
+Everything runs on **open** datasets; no private data is required or shipped. See
+[`data/README.md`](data/README.md) for one-command download/ingest of the Kaggle *ussimandsegm* real
+ultrasound set and the TotalSegmentator CT content.
+
+## Reproduce the paper
 
 ```bash
 export PYTORCH_ENABLE_MPS_FALLBACK=1
@@ -96,47 +96,37 @@ python scripts/curvi_warp.py ; python scripts/eval_tta_tent.py
 python scripts/bench_latency.py ; python scripts/bench_diffusion_latency.py
 ```
 
-## Closed-loop experiments (`scripts/premise/`, `scripts/train_organ_rl.py`)
+## Closed-loop acquisition RL
 
-The distinctive "does per-tissue texture *help an agent*?" study. A **real-trained** organ recognizer
-`J` (trained only on real Kaggle frames — non-circular) scores an organ-acquisition RL agent by
-ground-truth organ visibility.
+The paper reports a brief in-the-loop proof of concept (an agent whose reward is a real-trained organ
+recognizer). The **full** closed-loop RL study — method, seeds, and the multi-organ analysis — is part
+of a **separate follow-up publication** and is not included here; see
+[`scripts/closed_loop_rl/README.md`](scripts/closed_loop_rl/README.md).
 
-```bash
-# 1) reward-viability gate: does J recognize SonoSPADE's organ >> a global recolor's?
-bash scripts/premise/rerun_all.sh
-# 2) organ-conditioned liver acquisition RL: physics/CUT/CycleGAN/SonoSPADE x 3 seeds
-bash scripts/premise/run_organ_rl.sh && python scripts/premise/agg_organ_rl.py
+## How to cite
+
+If you use this code or ideas, please cite the paper and link this repository:
+
+```bibtex
+@inproceedings{sonospade2026,
+  title     = {SonoSPADE: Real-Time, Per-Tissue Ultrasound Texture Synthesis for Closed-Loop Acquisition},
+  author    = {<AUTHORS>},
+  booktitle = {Simulation and Synthesis in Medical Imaging (SASHIMI), MICCAI Workshop},
+  year      = {2026},
+  note      = {Code: https://github.com/<org>/SonoSPADE}
+}
 ```
-
-**Honest finding.** SonoSPADE's *liver* is recognized far better than a global recolor's (IoU
-0.48 vs 0.14–0.21), and the agent reaches the highest ground-truth liver visibility in **3/3 seeds** —
-a **small, seed-robust, liver-only** win. Kidney/spleen/gallbladder are **not** reward-viable: no
-translator (SonoSPADE included) renders them recognizably to a real recognizer, a simulator/translator
-limitation, not a recognizer one. Details and figures in
-[`docs/PREMISE_CHECK_RESULT.md`](docs/PREMISE_CHECK_RESULT.md).
 
 ## Limitations
 
 Unpaired training matches per-tissue *statistics*, not exact speckle — this is training texture, not
 diagnostic imagery. Acoustically similar soft tissues are near-inseparable in B-mode. Validation is a
-single dataset/anatomy (abdominal Kaggle, 60 annotated real frames). The in-the-loop win is modest and
-liver-only. See the paper's Limitations section.
-
-## Citation
-
-```bibtex
-@inproceedings{sonospade,
-  title     = {SonoSPADE: Real-Time, Per-Tissue Ultrasound Texture Synthesis for Closed-Loop Acquisition},
-  author    = {Anonymous},
-  booktitle = {Simulation and Synthesis in Medical Imaging (SASHIMI), MICCAI Workshop},
-  year      = {2026}
-}
-```
+single dataset/anatomy (abdominal Kaggle, 60 annotated real frames). See the paper's Limitations.
 
 ## Acknowledgements & license
 
-Built on LOTUS-style physics rendering and TotalSegmentator CT labels; evaluated on the public Kaggle
-*ussimandsegm* (Vitale et al.) real ultrasound set. `src/usbg/_vendor/` contains self-contained copies
-of the authors' SE(3) geometry and B-mode scan geometry so the release runs with no external repo.
-Code released under the terms in [`LICENSE`](LICENSE).
+Built on LOTUS-style physics rendering and [TotalSegmentator](https://github.com/wasserthal/TotalSegmentator)
+CT labels; evaluated on the public [Kaggle *ussimandsegm*](https://www.kaggle.com/datasets/ignaciorlando/ussimandsegm)
+(Vitale et al.) ultrasound set. `src/usbg/_vendor/` contains self-contained copies of the authors' SE(3)
+and B-mode scan geometry so the release runs with no external repo. Released under the terms in
+[`LICENSE`](LICENSE).

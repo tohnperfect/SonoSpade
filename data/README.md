@@ -40,5 +40,5 @@ The one-command drivers `scripts/run_sonospade_experiment.sh` and
 `scripts/run_sonospade_experiment_real.sh` chain these end-to-end.
 
 > **Fairness note:** for the sim→real head-to-head all translators must be trained on the *same*
-> real pool (`exp_real_*.pt`). Do **not** mix in an off-pool CUT checkpoint — see
-> `docs/PREMISE_CHECK_RESULT.md`.
+> real pool (`exp_real_*.pt`, i.e. the Kaggle Vitale train split). Do **not** mix in a CUT checkpoint
+> trained on a different real distribution — only the texture stage should differ across arms.

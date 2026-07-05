@@ -13,7 +13,7 @@ Variants (--variant):
 Usage (proposed method):
   export PYTORCH_ENABLE_MPS_FALLBACK=1
   python scripts/train_texture_gan.py --variant sonospade \\
-      --pairs data/dataset/usbg_labeled.npz --real-dir data/real_us_crop --s-us data/dataset/s_us.pt \\
+      --pairs data/dataset/usbg_labeled.npz --real-dir data/real/kaggle_vitale/pool --s-us data/dataset/s_us.pt \\
       --iters 4000 --out data/dataset/texture_sonospade.pt --preview outputs/sonospade_before_after.png
 
 Usage (existing CycleGAN, unchanged):

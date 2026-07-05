@@ -20,8 +20,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-rl  = ["mujoco>=3.2,<3.4"]                 # closed-loop acquisition env (scripts/premise/, train_organ_rl)
-viz = ["matplotlib>=3.6", "imageio>=2.30"] # figures / previews
+viz = ["matplotlib>=3.6", "imageio>=2.30"]  # figures / previews
 dev = ["pytest>=8.0"]
 
 # The import package is `usbg` (the closed-loop US testbed SonoSPADE was built in); SonoSPADE is
