@@ -1,0 +1,90 @@
+{
+  "schema_version": "sonospade-manifest-1.0",
+  "normalization": {
+    "dtype": "float32",
+    "range": [
+      0.0,
+      1.0
+    ],
+    "low_pct": 1.0,
+    "high_pct": 99.0,
+    "split_by": "session"
+  },
+  "shape": [
+    512,
+    160
+  ],
+  "streams": [
+    {
+      "name": "sim_pairs_full_dr",
+      "role": "sim_pairs",
+      "count": 880,
+      "labeled": true,
+      "license": "synthetic (usbg physics render)",
+      "split_by": "session",
+      "source": "scripts/make_dataset.py --pairs-out (domain_randomize full)",
+      "cases": [
+        "s0011",
+        "s0058",
+        "s0344",
+        "s0358",
+        "s0461",
+        "s0477",
+        "s0511",
+        "s0513"
+      ],
+      "file": "data/dataset/pairs_med.npz",
+      "note": "free aligned (image,label) pairs; content for G and S_US pretraining"
+    },
+    {
+      "name": "sim_pairs_mild_dr",
+      "role": "sim_pairs",
+      "count": 880,
+      "labeled": true,
+      "license": "synthetic (usbg physics render)",
+      "split_by": "session",
+      "source": "scripts/make_dataset.py --pairs-dr mild",
+      "cases": [
+        "s0011",
+        "s0058",
+        "s0344",
+        "s0358",
+        "s0461",
+        "s0477",
+        "s0511",
+        "s0513"
+      ],
+      "file": "data/dataset/pairs_mild.npz",
+      "note": "mild DR keeps per-tissue acoustics so distinct tissues stay separable"
+    },
+    {
+      "name": "own_real_crop",
+      "role": "real_pool",
+      "count": 149,
+      "labeled": false,
+      "license": "OWN, verify ethics/consent before publication (FLAG)",
+      "split_by": "session",
+      "source": "scripts/prepare_real_us.py crops",
+      "file": "data/real_us_crop",
+      "note": "unpaired unlabeled real B-mode; de-identify (strip banner/calipers/UI)"
+    },
+    {
+      "name": "kaggle_vitale",
+      "role": "eval_labeled",
+      "count": 617,
+      "labeled": true,
+      "license": "Kaggle ignaciorlando/ussimandsegm (Vitale), verify terms before publication (FLAG)",
+      "split_by": "session",
+      "source": "Vitale 2020 Ultrasound simulation and segmentation",
+      "note": "labeled real set for TSTR and per-class W1; the set S-CycleGAN used",
+      "labeled_test": 60,
+      "status": "downloaded, ingestion pending",
+      "path": "~/Codes/Dataset/ussimandsegm",
+      "real_images": "abdominal_US/abdominal_US/RUS/images/{train(404),test(213)}/*.jpg",
+      "real_labels": "abdominal_US/abdominal_US/RUS/annotations/test/*.png (60 RGB color-coded masks)",
+      "mask_encoding": "RGB color per organ (approx 7 colors + anti-alias noise); color->organ legend TO RESOLVE",
+      "next_step": "scripts/ingest_kaggle_us.py: real pool npz (617) + labeled test npz (60, colors mapped to canonical labels), then rerun the experiment for the real TSTR/W1 head-to-head"
+    }
+  ],
+  "notes": "Verify open-data licenses and own-data ethics before publication (handoff sec 8)."
+}

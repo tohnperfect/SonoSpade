@@ -1,0 +1,52 @@
+# SonoSPADE: physics-conditioned, per-tissue ultrasound texture translator.
+#
+# Every knob for the dual-input SPADE generator, the OASIS segmentation discriminator, the
+# frozen S_US consistency loss, and the PatchNCE content term lives here so a run is one config
+# plus one seed. Loaded by usbg.texture_gan.load_config and the training / eval scripts.
+# Host is Apple Silicon (MPS, no CUDA): keep channel counts and batch modest, and always run with
+# PYTORCH_ENABLE_MPS_FALLBACK=1. No em-dashes anywhere (commas, colons, or parentheses instead).
+
+name: sonospade                 # working name (placeholder, rename freely for the paper)
+
+model:
+  n_classes: 13                 # canonical labels 0..12 from usbg.volume (N_LABELS)
+  ngf: 32                       # generator base width
+  ndf: 32                       # discriminator base width
+  n_blocks: 6                   # SPADE residual blocks at the encoded resolution
+  spade_hidden: 64              # hidden width of the SPADE label-to-modulation heads
+  train_size: 128               # square training resolution (frames resized to this)
+
+loss:
+  lambda_nce: 1.0               # PatchNCE content-preservation weight (reuses CUT machinery)
+  lambda_seg: 5.0               # frozen S_US consistency weight (CE + Dice vs the input label)
+  lambda_seg_dice: 1.0          # Dice share inside the seg-consistency term (rest is CE)
+  lambda_tc: 1.0                # temporal-consistency (shift-equivariance) weight (0 = off)
+  lambda_labelmix: 1.0          # OASIS-style LabelMix discriminator consistency (0 = off)
+  r1_gamma: 1.0                 # R1 gradient penalty on the discriminator (0 = off)
+  nce_tau: 0.07                 # PatchNCE temperature
+  oasis_focal: false            # use focal weighting in the OASIS per-pixel CE (else class-balanced)
+
+train:
+  ema_decay: 0.999              # generator EMA for inference (rampup, 0 = off)
+  group_segmenter: false        # use the grouped (9-class) S_US scheme (merges degenerate soft tissues)
+
+optim:
+  lr: 0.0002
+  beta1: 0.5
+  beta2: 0.999
+  batch: 4
+  iters: 4000                   # full run; smoke tests use far fewer
+
+segmenter:                      # S_US, pretrained on free aligned sim (image, label) pairs
+  base: 32                      # U-Net base width
+  depth: 4                      # number of down/up stages
+  lr: 0.0005
+  batch: 8
+  iters: 3000
+  ckpt: data/dataset/s_us.pt
+
+data:
+  manifest: data/manifest.json
+  sim_npz: data/dataset/usbg_labeled.npz   # aligned (image, label) pairs from make_dataset --emit-labels
+  real_dir: data/real_us_crop              # unpaired, unlabeled real pool
+  eval_dir: data/eval                      # labeled real test set (Kaggle Vitale masks, optional own)

@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sonospade"
+version = "0.1.0"
+description = "SonoSPADE: real-time, GPU-free, per-tissue ultrasound texture synthesis for closed-loop acquisition"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "torch>=2.2",
+    "torchvision>=0.17",   # InceptionV3 features for FID/KID
+    "nibabel>=5.0",        # CT (.nii.gz) loading in usbg.volume
+    "pyyaml>=6.0",         # configs
+    "pillow>=9.0",         # image resize / IO
+]
+
+[project.optional-dependencies]
+rl  = ["mujoco>=3.2,<3.4"]                 # closed-loop acquisition env (scripts/premise/, train_organ_rl)
+viz = ["matplotlib>=3.6", "imageio>=2.30"] # figures / previews
+dev = ["pytest>=8.0"]
+
+# The import package is `usbg` (the closed-loop US testbed SonoSPADE was built in); SonoSPADE is
+# usbg.texture_gan (+ usbg.segmenter). Kept as-is so imports match the paper's released code.
+[tool.setuptools.packages.find]
+where = ["src"]

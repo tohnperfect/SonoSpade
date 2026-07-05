@@ -1,0 +1,18 @@
+# data & model checkpoints (large; regenerate via scripts / download per data/README.md)
+data/**
+!data/manifest.json
+!data/README.md
+# experiment outputs
+outputs/**
+# python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+# latex build artifacts
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+paper/*.synctex.gz
