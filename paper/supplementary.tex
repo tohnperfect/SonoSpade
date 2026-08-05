@@ -31,7 +31,7 @@
 training-term ablation (Table~\ref{tab:abl}), the per-tissue label-swap locality breakdown
 (Table~\ref{tab:locality_pertissue}), the per-tissue qualitative result (Fig.~\ref{fig:qual}), the
 pseudo-label quality of the frozen $S_{US}$ on real frames (Table~\ref{tab:pseudolabel}), the complete
-hyperparameters (Table~\ref{tab:hyper}), and the curvilinear remap (Fig.~\ref{fig:curvi_supp})
+hyperparameters (Table~\ref{tab:hyper})
 referenced in the main paper. All numbers are generated from the same result files as the main tables. For the head-to-head, all three translators are trained on the \emph{same} real pool; an off-pool CUT checkpoint wrongly reverses the result.
 
 \begin{table}[h]
@@ -185,13 +185,5 @@ PatchNCE     & Patches per layer & $256$\\
 \end{table}
 
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.48\linewidth]{figures/curvilinear.png}
-\caption{Curvilinear remap (Experiment~A, Sec.~4.5 of the main paper). After warping into the measured
-sector geometry, the curvilinear physics render (top), SonoSPADE-curvi (middle), and a real Kaggle frame
-(bottom) share the same sector field.}
-\label{fig:curvi_supp}
-\end{figure}
 
 \end{document}
