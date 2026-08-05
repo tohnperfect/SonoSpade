@@ -40,6 +40,11 @@ Sushko, V., Sch{\"o}nfeld, E., Zhang, D., Gall, J., Schiele, B., Khoreva, A.:
   You only need adversarial supervision for semantic image synthesis. In: ICLR
   (2021)
 
+\bibitem{todorov2012mujoco}
+Todorov, E., Erez, T., Tassa, Y.: {MuJoCo}: A physics engine for model-based
+  control. In: IEEE/RSJ International Conference on Intelligent Robots and
+  Systems (IROS). pp. 5026--5033 (2012)
+
 \bibitem{velikova2022cactuss}
 Velikova, Y., Simson, W., Salehi, M., Azampour, M.F., Paprottka, P., Navab, N.:
   {CACTUSS}: Common anatomical {CT}-{US} space for {US} examinations. In:
@@ -56,10 +61,19 @@ Vitale, S., et~al.: Improving realism in abdominal ultrasound simulation
   combining a segmentation-guided loss and polar coordinates training. Medical
   Physics  (2025)
 
+\bibitem{wang2021tent}
+Wang, D., Shelhamer, E., Liu, S., Olshausen, B., Darrell, T.: Tent: Fully
+  test-time adaptation by entropy minimization. In: ICLR (2021)
+
 \bibitem{wasserthal2023totalseg}
 Wasserthal, J., Breit, H.C., Meyer, M.T., et~al.: {TotalSegmentator}: Robust
   segmentation of 104 anatomical structures in {CT} images. Radiology:
   Artificial Intelligence  \textbf{5}(5) (2023)
+
+\bibitem{williams1992reinforce}
+Williams, R.J.: Simple statistical gradient-following algorithms for
+  connectionist reinforcement learning. Machine Learning  \textbf{8}(3--4),
+  229--256 (1992)
 
 \bibitem{yun2019cutmix}
 Yun, S., Han, D., Oh, S.J., Chun, S., Choe, J., Yoo, Y.: {CutMix}:

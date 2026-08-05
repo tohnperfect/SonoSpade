@@ -30,7 +30,7 @@
 \noindent This supplement collects the whole-frame FID/KID scores (Table~\ref{tab:fidkid}), the
 training-term ablation (Table~\ref{tab:abl}), the per-tissue label-swap locality breakdown
 (Table~\ref{tab:locality_pertissue}), and the per-tissue qualitative result (Fig.~\ref{fig:qual})
-referenced in the main paper. All numbers are generated from the same result files as the main tables.
+referenced in the main paper. All numbers are generated from the same result files as the main tables. For the head-to-head, all three translators are trained on the \emph{same} real pool; an off-pool CUT checkpoint wrongly reverses the result.
 
 \begin{table}[h]
 \centering
@@ -113,5 +113,73 @@ its texture locally (last column): the swapped region's texture changes while th
 put, which is what the label-swap locality metric measures.}
 \label{fig:qual}
 \end{figure}
+
+
+\begin{table}[h]
+\centering
+\caption{Pseudo-label quality of the frozen $S_{US}$ on the $60$ annotated real Kaggle frames, which it
+never saw (Sec.~4.3 of the main paper). Linear is the checkpoint that produced the reported
+pseudo-labels; curvilinear is the geometry-matched retrain. The reference masks annotate only these five
+organs, so any prediction on unannotated tissue counts against precision, which is why precision, not
+sensitivity, is the binding term. Trained only in simulation, $S_{US}$ gives the discriminator a coarse
+regional prior rather than accurate anatomy.}
+\label{tab:pseudolabel}
+\begin{tabular}{lcccccccc}
+\toprule
+& & \multicolumn{3}{c}{Linear} & \multicolumn{3}{c}{Curvilinear}\\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}
+Organ & Frames & Dice & Sens. & Prec. & Dice & Sens. & Prec.\\
+\midrule
+Liver         & $39$ & $0.124$ & $0.23$ & $0.09$ & $0.339$ & $0.38$ & $0.31$\\
+Gallbladder   & $12$ & $0.000$ & $0.00$ & $0.00$ & $0.030$ & $0.04$ & $0.03$\\
+Vessel        & $16$ & $0.017$ & $0.40$ & $0.01$ & $0.058$ & $0.30$ & $0.03$\\
+Kidney        & $15$ & $0.000$ & $0.00$ & $0.00$ & $0.000$ & $0.00$ & $0.00$\\
+Spleen        & $6$ & $0.000$ & $0.00$ & $0.00$ & $0.000$ & $0.00$ & $0.00$\\
+\midrule
+Macro & $60$ & $0.028$ & & & $0.085$ & &\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{table}[h]
+\centering
+\caption{Complete hyperparameters for the reported SonoSPADE run (Sec.~3 of the main paper), as used by
+\texttt{scripts/run\_sonospade\_experiment\_real.sh}. Loss weights follow
+$\mathcal{L}_G=\mathcal{L}_{adv}+\lambda_{nce}\mathcal{L}_{nce}+\lambda_{seg}\mathcal{L}_{seg}
++\lambda_{tc}\mathcal{L}_{tc}$ and
+$\mathcal{L}_D=\mathcal{L}_{adv}^{D}+\lambda_{lm}\mathcal{L}_{lm}+\tfrac{\gamma}{2}\mathcal{L}_{R1}$.}
+\label{tab:hyper}
+\begin{tabular}{lll}
+\toprule
+Group & Setting & Value\\
+\midrule
+Loss weights & $\lambda_{seg}$ (frozen $S_{US}$ consistency) & $5$\\
+             & $\lambda_{nce}$ (PatchNCE content) & $1$\\
+             & $\lambda_{tc}$ (temporal consistency) & $1$\\
+             & $\lambda_{lm}$ (OASIS LabelMix, on $D$) & $1$\\
+             & $\gamma$ (R1 penalty, on $D$) & $1$\\
+             & Dice share inside $\mathcal{L}_{seg}$ & $1$ (unweighted CE${+}$Dice)\\
+\midrule
+Optimizer    & Adam, learning rate & $2\times10^{-4}$\\
+             & $(\beta_1,\beta_2)$ & $(0.5, 0.999)$\\
+             & Batch size & $4$\\
+             & Iterations & $1500$\\
+             & Training resolution & $128\times128$\\
+             & Seed & $0$\\
+\midrule
+Generator    & Base width, SPADE blocks & $32$, $6$\\
+             & SPADE hidden width & $64$\\
+             & Canonical classes $K$ & $13$\\
+             & EMA decay (deployed weights) & $0.999$\\
+\midrule
+Discriminator& U-Net depth, base width & $4$, $32$\\
+             & Per-pixel output classes & $10$ ($N{=}9$ grouped ${+}$ fake)\\
+\midrule
+PatchNCE     & Patches per layer & $256$\\
+             & Temperature & $0.07$\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \end{document}
