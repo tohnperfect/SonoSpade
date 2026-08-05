@@ -9,10 +9,6 @@ without a GPU**, two to three orders of magnitude faster (per frame) than a sema
 synthesizer, so it can sit inside a closed-loop reinforcement-learning acquisition simulator, where a
 new frame must be rendered at every agent step.
 
-📄 The paper is [`paper/main_sashimi.pdf`](paper/main_sashimi.pdf) (MICCAI SASHIMI camera-ready, LNCS
-format), with [`paper/supplementary.pdf`](paper/supplementary.pdf) alongside it. `paper/` is the
-complete Overleaf-ready source package: see [`paper/README.txt`](paper/README.txt) to rebuild.
-
 ---
 
 ## Why per-tissue?
