@@ -39,11 +39,11 @@ In a first in-the-loop proof of concept, on an organ-conditioned task scored by 
 \end{abstract}
 
 \section{Introduction}
-We study how to learn ultrasound \emph{acquisition} in simulation: an agent moves a virtual probe and observes the B-mode frame (the standard grayscale ultrasound image) it would produce, so a texture stage must render a new frame at every step, and frames cannot be pre-rendered. 
+We study how to learn ultrasound \emph{acquisition} in simulation: an agent moves a virtual probe and observes the B-mode frame it would produce, that is, the standard grayscale ultrasound image, so a texture stage must render a new frame at every step, and frames cannot be pre-rendered. 
 The stage must be fast, must run on an ordinary computer, and must be controllable, so that the agent's actions map to anatomy. 
 Realism-first synthesizers do not meet these needs. Diffusion produces high-quality ultrasound but takes seconds per frame~\cite{stojanovski2023echofromnoise}, far too slow for a loop that uses millions of frames. 
 Global sim-to-real translators work on the grayscale image alone~\cite{song2024scyclegan}, applying one appearance map to the whole frame, so they cannot make sure that liver reads as liver and kidney as kidney. 
-Yet the pipeline already knows the anatomy: a canonical label slice drives a physics B-mode with acoustic shadowing, a depth-varying point spread function, and correlated speckle (the grainy interference pattern that gives each tissue its characteristic look). We make the learned stage \emph{per tissue} by conditioning it on that label slice, and keep it single-pass so it runs in real time without a GPU. 
+Yet the pipeline already knows the anatomy: a canonical label slice drives a physics B-mode with acoustic shadowing, a depth-varying point spread function, and correlated speckle, the grainy interference pattern that gives each tissue its characteristic look. We make the learned stage \emph{per tissue} by conditioning it on that label slice, and keep it single-pass so it runs in real time without a GPU. 
 
 What is new here is the combination. SPADE~\cite{park2019spade} and OASIS~\cite{sushko2021oasis} synthesize from a label map alone and need real images with real labels. CUT~\cite{park2020cut} translates the grayscale frame with no label at all, while S-CycleGAN~\cite{song2024scyclegan} and Vitale et al.~\cite{vitale2025realism} use segmentation only as a \emph{loss} on a generator that never sees the label, so none of these three can be steered per tissue at inference (locality $0$ for the label-free translators in Table~\ref{tab:main}). We instead \emph{condition} the generator on the label \emph{and} the physics render, and take the labels for free from a frozen simulator-pretrained segmenter: per-tissue steerable, no real annotation, and fast enough for the loop. 
 Our contributions are:
@@ -108,8 +108,8 @@ $G$ is a ResNet encoder-decoder whose residual and upsampling blocks are SPADE-n
 parameter-free instance norm whose per-pixel scale and bias are predicted from the resized label map
 $\ell$, so the semantic layout modulates activations at every scale~\cite{park2019spade}. The physics
 render $x$ is the content stream, so $G$ refines a tissue-correct render instead of hallucinating anatomy.
-Content is preserved by multilayer PatchNCE~\cite{park2020cut} (a patchwise contrastive loss tying each
-output patch to the input patch at the same location) on $G$'s own encoder features between $x$
+Content is preserved by multilayer PatchNCE~\cite{park2020cut}, a patchwise contrastive loss tying each
+output patch to the input patch at the same location, on $G$'s own encoder features between $x$
 and $G(x,\ell)$; there is no inverse generator and no cycle loss.
 
 \subsection{Free unpaired segmentation consistency}
@@ -151,16 +151,17 @@ CUDA).
 \subsection{The label conditioning is genuinely per-tissue}
 \label{sec:pertissue}
 The central claim is that texture is per-tissue, not a global recolor. Holding the physics render fixed,
-we relabel a tissue region to the reference tissue (liver) and measure the texture change inside versus outside. A global recolor scores
+we relabel a tissue region to the reference tissue, liver, and measure the texture change inside versus outside. A global recolor scores
 near zero inside. The label-swap locality metric in
 Table~\ref{tab:main} is a per-class summary: it averages each tissue's own inside/outside ratio,
 giving $\locSono$ for SonoSPADE versus $0$ for every label-free translator by construction (supplementary
 Fig.~S1, per-tissue values in Table~S3). Per-class speckle SNR also shifts per tissue.
 
-\noindent\textbf{Reading the score.} The score divides the mean absolute output change inside the
-relabeled region by the change outside it, so $0$ means the output ignores the label, $1$ means the edit
-spreads evenly over the frame, and the scale is unbounded above. Our $26.3$ says the average tissue
-changes about $26$ times more inside its own region than outside, from $10.4$ (fat) to $60.7$ (bone).
+What the score means in practice is how much of the edit stays where it was asked for: it divides the
+mean absolute output change inside the relabeled region by the change outside it. A score of $0$ means
+the output ignores the label entirely, $1$ means the edit spreads evenly over the whole frame, and there
+is no upper bound. Our $26.3$ says the average tissue changes about $26$ times more inside its own region
+than outside, from $10.4$ for fat to $60.7$ for bone.
 
 \subsection{Free segmentation supervision}
 Pretrained on the aligned pairs, $S_{US}$ reaches \liverDice{}/\lungDice{}/\vesselDice{} Dice on
@@ -185,7 +186,7 @@ Table~\ref{tab:main} compares raw physics, CycleGAN~\cite{zhu2017cyclegan}, CUT~
 S-CycleGAN-style variant~\cite{song2024scyclegan}, and SonoSPADE on the real Kaggle set.
 \textbf{Structure:} SonoSPADE preserves anatomy far better than any learned translator (edge IoU \iouSono{} versus \iouCUT{}/\iouCyc{} for CUT/CycleGAN, a $2.4\times$ margin): the label-free translators remap the frame to match appearance and drift on structure, while physics-plus-label conditioning keeps anatomy intact. \textbf{Per-organ realism:} We report intensity $W_1$ \emph{restricted to the annotated organ masks}, since the whole-frame score is dominated by the background. 
 Inside the masks, the recolors lose per-tissue fidelity (organ $W_1$ \wCyc{}/\wCUT{} versus \wPhys{} for the render they started from), while SonoSPADE keeps it and is the only method with per-tissue control (locality 26.3 versus $0$). 
-TSTR (train-on-synthetic, test-on-real: train a segmenter on translated frames, score it on real ones) is near zero for all linear methods (SonoSPADE lowest, \tstrSono{}), dominated by a linear-versus-curvilinear geometry gap and further
+TSTR, train-on-synthetic test-on-real, which trains a segmenter on translated frames and scores it on real ones, is near zero for all linear methods (SonoSPADE lowest, \tstrSono{}), dominated by a linear-versus-curvilinear geometry gap and further
 depressed for SonoSPADE because its conditioning shifts features from what the classifier expects; matching the geometry and adding test-time adaptation reverses the ranking (next).
 
 \begin{table}[t]
