@@ -35,7 +35,7 @@ A segmenter, pretrained for free on aligned simulator pairs and then frozen, pse
 A single pass runs at $15$ to $85$ frames per second \emph{without a GPU}, two to three orders of magnitude faster than diffusion. 
 On the public Kaggle abdominal set, when we change a region's tissue label, only that region's texture changes, while methods that ignore the label do not react at all (label-swap locality ${\approx}\,26$, versus $0$). 
 Per-organ intensity matches real about $2\times$ better than any learned baseline, and structure is preserved $2.4\times$ better; on whole-frame FID/KID it trails by design. 
-As a first in-the-loop proof of concept, on an organ-conditioned task scored by a \emph{fixed} real-trained recognizer shared across texture stages, the per-tissue reward gives the highest ground-truth liver visibility in all three seeds. Code and the reproducible pipeline are released.
+As a first in-the-loop proof of concept, on an organ-conditioned task scored by a \emph{fixed} real-trained recognizer shared across texture stages, the per-tissue reward gives the highest ground-truth liver visibility in all three seeds. Code and the reproducible pipeline are released.\footnote{\url{https://github.com/tohnperfect/SonoSpade}}
 \keywords{Ultrasound synthesis \and Semantic image synthesis \and Real-time synthesis \and Closed-loop simulation \and Sim-to-real.}
 \end{abstract}
 
@@ -51,7 +51,7 @@ Our contributions are:
 \begin{itemize}
 \item A real-time, GPU-free per-tissue texture stage: a single pass at $15$--$85$ frames/s on a laptop with no discrete GPU, two to three orders of magnitude faster than diffusion, that runs in the loop without becoming the bottleneck.
 \item A physics-conditioned dual-input generator, conditioned on \emph{both} the physics render and the label slice, giving per-tissue control (relabel a region and only its texture changes) with free unpaired segmentation consistency, so no real labels are needed.
-\item A per-tissue evaluation (per-class Wasserstein, a label-swap locality metric, speckle SNR/GLCM), plus a diagnosis and two fixes (a sector remap and test-time adaptation) that move SonoSPADE from worst to ahead of the raw render on downstream transfer.
+\item A per-tissue evaluation (per-class Wasserstein, a label-swap locality metric, speckle SNR, gray-level co-occurrence matrix (GLCM) texture), plus a diagnosis and two fixes (a sector remap and test-time adaptation) that move SonoSPADE from worst to ahead of the raw render on downstream transfer.
 \item A first in-the-loop proof of concept: under a \emph{fixed} real-trained recognizer shared across texture stages, the per-tissue reward gives the highest ground-truth liver visibility in all three seeds.
 \end{itemize}
 
@@ -236,7 +236,7 @@ The near-zero TSTR in Table~\ref{tab:main} is a geometry problem, not texture: o
 \emph{linear} rectangular frame while Kaggle frames are \emph{curvilinear} sector scans, so a segmenter
 trained on the linear render meets a different spatial prior at test time. Two drop-in fixes
 (Table~\ref{tab:tstr}). \textbf{(A)}~A curvilinear remap warps the render (image and label) into the
-measured sector geometry (about $46^{\circ}$; Fig.~\ref{fig:curvi}) at train and test time, with
+measured sector geometry (about $46^{\circ}$; supplementary Fig.~S3) at train and test time, with
 probe-motion augmentation: TSTR rises about $4\times$ for SonoSPADE and about $2\times$ for the raw render,
 tying them (\tstrSonoCurvi{}$\pm$\tstrSonoCurviSd{} versus \tstrPhysCurvi{}$\pm$\tstrPhysCurviSd{},
 \ttaSeeds{} seeds). \textbf{(B)}~Test-time adaptation (TENT~\cite{wang2021tent}) of the segmenter's BatchNorm on $50$
@@ -258,15 +258,6 @@ $+$ curvilinear $+$ TENT (B)           & \tstrPhysTent{} {\footnotesize $\pm$\ts
 \bottomrule
 \end{tabular}
 \end{table}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.48\linewidth]{figures/curvilinear.png}
-\caption{Curvilinear remap (Experiment~A, Sec.~\ref{sec:tstr}). After warping into the measured sector
-geometry, the curvilinear physics render (top), SonoSPADE-curvi (middle), and a real Kaggle frame (bottom)
-share the same sector field.}
-\label{fig:curvi}
-\end{figure}
 
 \subsection{Inference latency: real time, no GPU}
 \label{sec:latency}
@@ -318,7 +309,7 @@ SonoSPADE is a real-time, GPU-free, per-tissue ultrasound texture stage for clos
 After matching the sector geometry it overtakes the untranslated render on downstream transfer, and its per-tissue reward gives an in-the-loop agent the highest ground-truth liver visibility under a fixed real-trained judge. 
 More broadly, a fast, controllable texture stage makes closed-loop acquisition simulation practical, a step toward training autonomous and robotic ultrasound acquisition in simulation.
 
-\noindent\textbf{Code availability.} Code, training and evaluation scripts, and the data pipeline: \url{github.com/tohnperfect/SonoSpade}.
+The motivating application is population-scale abdominal screening, where a deep model already assists diagnosis on real biliary-tract ultrasound~\cite{intharah2023bitnet}. Such systems assume a usable view has been acquired; learning acquisition in simulation targets that upstream step.
 
 \begin{credits}
 \subsubsection{\discintname}

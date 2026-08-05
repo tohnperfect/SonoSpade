@@ -9,6 +9,13 @@ Gilbert, A., Marciniak, M., Rodero, C., Lamata, P., Samset, E., McLeod, K.:
   with echocardiography segmentation. IEEE Transactions on Medical Imaging
   \textbf{40}(10),  2783--2794 (2021)
 
+\bibitem{intharah2023bitnet}
+Intharah, T., Wiratchawa, K., Wanna, Y., Junsawang, P., Titapun, A., Techasen,
+  A., Boonrod, A., Laopaiboon, V., Chamadol, N., Khuntikeo, N.: {BiTNet}:
+  Hybrid deep convolutional model for ultrasound image analysis of human
+  biliary tract and its applications. Artificial Intelligence in Medicine
+  \textbf{139},  102539 (2023)
+
 \bibitem{mescheder2018r1}
 Mescheder, L., Geiger, A., Nowozin, S.: Which training methods for {GANs} do
   actually converge? In: ICML (2018)
