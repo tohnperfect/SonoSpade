@@ -4,6 +4,10 @@ data/**
 !data/README.md
 # experiment outputs
 outputs/**
+# macOS
+.DS_Store
+# author's local copy of the submission package (canonical copy is paper/)
+SonoSPADE_SASHIMI_SUBMISSION/
 # python
 __pycache__/
 *.pyc
@@ -14,5 +18,6 @@ paper/*.aux
 paper/*.log
 paper/*.out
 paper/*.bbl
+!paper/main_sashimi.bbl
 paper/*.blg
 paper/*.synctex.gz

@@ -9,7 +9,9 @@ without a GPU** — two to three orders of magnitude faster (per frame) than a s
 synthesizer — so it can sit inside a closed-loop reinforcement-learning acquisition simulator, where a
 new frame must be rendered at every agent step.
 
-📄 The paper (LNCS format) is in [`paper/main.pdf`](paper/main.pdf).
+📄 The paper is [`paper/main_sashimi.pdf`](paper/main_sashimi.pdf) (MICCAI SASHIMI submission, LNCS
+format), with [`paper/supplementary.pdf`](paper/supplementary.pdf) alongside it. `paper/` is the
+complete Overleaf-ready source package — see [`paper/README.txt`](paper/README.txt) to rebuild.
 
 ---
 
@@ -49,7 +51,8 @@ src/usbg/            the SonoSPADE code (package name `usbg` = the closed-loop U
   slicer.py, placement.py   probe pose → 2D label slice; organ-centred pose seating
   _vendor/             self-contained SE(3) geometry + scan geometry (vendored; no external repo needed)
 scripts/             training, evaluation, and experiment drivers
-paper/               LNCS source + compiled PDF (main.pdf)
+paper/               SASHIMI submission package: LNCS source + compiled main_sashimi.pdf,
+                     supplementary.pdf, figures, bibliography (README.txt = build steps)
 docs/                SONOSPADE.md (method notes)
 configs/             sonospade.yaml (hyperparameters)
 data/                README with data-download / regeneration instructions (data itself not shipped)
@@ -113,7 +116,7 @@ If you use this code or ideas, please cite the paper and link this repository:
   author    = {<AUTHORS>},
   booktitle = {Simulation and Synthesis in Medical Imaging (SASHIMI), MICCAI Workshop},
   year      = {2026},
-  note      = {Code: https://github.com/<org>/SonoSPADE}
+  note      = {Code: https://github.com/tohnperfect/SonoSpade}
 }
 ```
 

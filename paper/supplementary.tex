@@ -1,0 +1,115 @@
+\documentclass[runningheads]{llncs}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{figures/}}
+
+% Same result macros as the main paper: every reported number is regenerated from the experiment output.
+\newcommand{\na}{\textcolor{gray}{--}}
+\input{results_macros}
+\input{rl_results_macros}
+
+% Number floats as S1, S2, ... so they match the "supplementary Table S1 / Fig. S1" references in the paper.
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+
+\begin{document}
+
+\title{SonoSPADE: Supplementary Material}
+\titlerunning{SonoSPADE: Supplementary Material}
+\author{Anonymous}
+\authorrunning{Anonymous}
+\institute{Anonymous Institution}
+\maketitle
+
+\noindent This supplement collects the whole-frame FID/KID scores (Table~\ref{tab:fidkid}), the
+training-term ablation (Table~\ref{tab:abl}), the per-tissue label-swap locality breakdown
+(Table~\ref{tab:locality_pertissue}), and the per-tissue qualitative result (Fig.~\ref{fig:qual})
+referenced in the main paper. All numbers are generated from the same result files as the main tables.
+
+\begin{table}[h]
+\centering
+\caption{Whole-frame FID/KID ($\times 10^{3}$) against the real pool (InceptionV3), lower better.
+SonoSPADE is not competitive by design, because these metrics reward the global recolor it does not
+perform. The bottom block re-runs in the sector geometry, which improves all absolute scores but not the
+ranking.}
+\label{tab:fidkid}
+\begin{tabular}{lcc}
+\toprule
+Method & FID $\downarrow$ & KID $\times 10^{3}$ $\downarrow$\\
+\midrule
+Raw physics            & \fidPhys & \kidPhys\\
+CycleGAN               & \fidCyc  & \kidCyc\\
+CUT                    & \fidCUT  & \kidCUT\\
+S-CycleGAN (reimpl.)   & \fidSCyc & \kidSCyc\\
+SonoSPADE              & \fidSono & \kidSono\\
+\midrule
+Raw physics-curvi      & \fidPhysCurvi  & \kidPhysCurvi\\
+CycleGAN-curvi         & \fidCycCurvi   & \kidCycCurvi\\
+CUT-curvi              & \fidCUTCurvi   & \kidCUTCurvi\\
+S-CycleGAN-curvi       & \fidSCycCurvi  & \kidSCycCurvi\\
+SonoSPADE-curvi        & \fidSonoCurvi  & \kidSonoCurvi\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Ablation (one term off per row, each retrained at a fixed budget). Removing the frozen $S_{US}$
+seg-consistency term roughly halves locality and degrades structure, the largest single effect. This is
+the full version of the ablation summarized in Sec.~4.5 of the main paper.}
+\label{tab:abl}
+\begin{tabular}{lccc}
+\toprule
+Variant & Edge IoU $\uparrow$ & Organ $W_1$ $\downarrow$ & Locality $\uparrow$\\
+\midrule
+Full SonoSPADE          & \ablIouFull & \ablWFull & \ablLocFull\\
+$-$ $S_{US}$ consistency & \ablIouSeg  & \ablWSeg  & \ablLocSeg\\
+$-$ OASIS LabelMix       & \ablIouLm   & \ablWLm   & \ablLocLm\\
+$-$ temporal consistency & \ablIouTc   & \ablWTc   & \ablLocTc\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Per-tissue label-swap locality on the physics/label content frames (higher means the texture
+change is more localized to the relabeled region). Liver is the reference tissue and is excluded; spleen
+and muscle rarely reach the $200$-pixel minimum in the content frames and are omitted. The values are the
+measured per-class means behind the main-paper locality of $26.3$ (they average to it). Per-frame standard
+deviations can be added with \texttt{scripts/eval\_locality\_std.py}.}
+\label{tab:locality_pertissue}
+\begin{tabular}{lc}
+\toprule
+Tissue & Label-swap locality $\uparrow$\\
+\midrule
+Gallbladder            & $22.8$\\
+Vessel                 & $18.7$\\
+Kidney                 & $30.2$\\
+GI tract               & $40.3$\\
+Pancreas               & $28.8$\\
+Fat                    & $10.4$\\
+Bone                   & $60.7$\\
+Lung                   & $13.0$\\
+Soft tissue            & $11.5$\\
+\midrule
+All tissues (mean)     & $26.3$\\
+Label-free translators & $0$ (by construction)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\linewidth]{qualitative.png}
+\caption{Per-tissue qualitative result (Sec.~4.2 of the main paper). The rows are the physics render, the
+SonoSPADE output, and the tissue label. Each tissue gets its own speckle, and relabeling a region changes
+its texture locally (last column): the swapped region's texture changes while the rest of the frame stays
+put, which is what the label-swap locality metric measures.}
+\label{fig:qual}
+\end{figure}
+
+\end{document}

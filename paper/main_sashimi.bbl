@@ -1,0 +1,73 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{gilbert2021synthetic}
+Gilbert, A., Marciniak, M., Rodero, C., Lamata, P., Samset, E., McLeod, K.:
+  Generating synthetic labeled data from existing anatomical models: An example
+  with echocardiography segmentation. IEEE Transactions on Medical Imaging
+  \textbf{40}(10),  2783--2794 (2021)
+
+\bibitem{mescheder2018r1}
+Mescheder, L., Geiger, A., Nowozin, S.: Which training methods for {GANs} do
+  actually converge? In: ICML (2018)
+
+\bibitem{park2020cut}
+Park, T., Efros, A.A., Zhang, R., Zhu, J.Y.: Contrastive learning for unpaired
+  image-to-image translation. In: ECCV (2020)
+
+\bibitem{park2019spade}
+Park, T., Liu, M.Y., Wang, T.C., Zhu, J.Y.: Semantic image synthesis with
+  spatially-adaptive normalization. In: CVPR (2019)
+
+\bibitem{ronneberger2015unet}
+Ronneberger, O., Fischer, P., Brox, T.: {U-Net}: Convolutional networks for
+  biomedical image segmentation. In: MICCAI (2015)
+
+\bibitem{song2024scyclegan}
+Song, Y., Chong, N.Y.: {S-CycleGAN}: Semantic segmentation enhanced
+  {CT}-ultrasound image-to-image translation for robotic ultrasonography. arXiv
+  preprint arXiv:2406.01191  (2024)
+
+\bibitem{stojanovski2023echofromnoise}
+Stojanovski, D., Hermida, U., Lamata, P., Beqiri, A., Gomez, A.: Echo from
+  noise: Synthetic ultrasound image generation using diffusion models for real
+  image segmentation. In: MICCAI ASMUS Workshop (2023)
+
+\bibitem{sushko2021oasis}
+Sushko, V., Sch{\"o}nfeld, E., Zhang, D., Gall, J., Schiele, B., Khoreva, A.:
+  You only need adversarial supervision for semantic image synthesis. In: ICLR
+  (2021)
+
+\bibitem{velikova2022cactuss}
+Velikova, Y., Simson, W., Salehi, M., Azampour, M.F., Paprottka, P., Navab, N.:
+  {CACTUSS}: Common anatomical {CT}-{US} space for {US} examinations. In:
+  MICCAI (2022)
+
+\bibitem{vitale2020realism}
+Vitale, S., Orlando, J.I., Iarussi, E., Larrabide, I.: Improving realism in
+  patient-specific abdominal ultrasound simulation using {CycleGANs}.
+  International Journal of Computer Assisted Radiology and Surgery
+  \textbf{15},  183--192 (2020)
+
+\bibitem{vitale2025realism}
+Vitale, S., et~al.: Improving realism in abdominal ultrasound simulation
+  combining a segmentation-guided loss and polar coordinates training. Medical
+  Physics  (2025)
+
+\bibitem{wasserthal2023totalseg}
+Wasserthal, J., Breit, H.C., Meyer, M.T., et~al.: {TotalSegmentator}: Robust
+  segmentation of 104 anatomical structures in {CT} images. Radiology:
+  Artificial Intelligence  \textbf{5}(5) (2023)
+
+\bibitem{yun2019cutmix}
+Yun, S., Han, D., Oh, S.J., Chun, S., Choe, J., Yoo, Y.: {CutMix}:
+  Regularization strategy to train strong classifiers with localizable
+  features. In: ICCV (2019)
+
+\bibitem{zhu2017cyclegan}
+Zhu, J.Y., Park, T., Isola, P., Efros, A.A.: Unpaired image-to-image
+  translation using cycle-consistent adversarial networks. ICCV  (2017)
+
+\end{thebibliography}
