@@ -1,6 +1,6 @@
 """contracts_bridge.py: the single import surface for the cross-repo contract.
 
-us_bmode_gym never redefines channels, classes, timing, or SE(3) math. It imports them
+This package never redefines channels, classes, timing, or SE(3) math. It imports them
 from the sibling `par` package (probe_action_recognizer) and re-exports them here so the
 rest of usbg has one place to look. This module also:
 

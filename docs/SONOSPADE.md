@@ -3,8 +3,8 @@
 SonoSPADE replaces the tissue-agnostic grayscale texture translator with a dual-input, spatially
 adaptive one, so each segmented tissue gets its own learned speckle (liver reads as liver, kidney
 as kidney). It combines the strengths of SPADE (spatially adaptive per-class synthesis) and
-S-CycleGAN (segmentation-consistent CT to US translation) and adds the USB Gym's own lever: the
-physics render as a second conditioning input. Working name is a placeholder, rename for the paper.
+S-CycleGAN (segmentation-consistent CT to US translation) and adds the host simulator's own lever: the
+physics render as a second conditioning input.
 
 Host is Apple Silicon (MPS, no CUDA). Always run:
 

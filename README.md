@@ -5,13 +5,13 @@
 SonoSPADE is a physics-conditioned, *per-tissue* ultrasound texture stage: it refines a physics
 B-mode render into realistic ultrasound under spatially-adaptive conditioning from the **tissue label
 slice**, trained **unpaired with no real annotations**. A single generator pass runs at **15–85 fps
-without a GPU** — two to three orders of magnitude faster (per frame) than a semantic-diffusion
-synthesizer — so it can sit inside a closed-loop reinforcement-learning acquisition simulator, where a
+without a GPU**, two to three orders of magnitude faster (per frame) than a semantic-diffusion
+synthesizer, so it can sit inside a closed-loop reinforcement-learning acquisition simulator, where a
 new frame must be rendered at every agent step.
 
-📄 The paper is [`paper/main_sashimi.pdf`](paper/main_sashimi.pdf) (MICCAI SASHIMI submission, LNCS
+📄 The paper is [`paper/main_sashimi.pdf`](paper/main_sashimi.pdf) (MICCAI SASHIMI camera-ready, LNCS
 format), with [`paper/supplementary.pdf`](paper/supplementary.pdf) alongside it. `paper/` is the
-complete Overleaf-ready source package — see [`paper/README.txt`](paper/README.txt) to rebuild.
+complete Overleaf-ready source package: see [`paper/README.txt`](paper/README.txt) to rebuild.
 
 ---
 
@@ -33,7 +33,7 @@ a region and only *its* texture changes.
 | **Structure preservation** (edge-IoU, ↑) | **0.41** | 0.17 | 2.4× the best baseline |
 | Whole-frame **FID/KID** | loses *by design* | wins | these reward the global recolor SonoSPADE does not perform |
 | **Latency** (CPU / iGPU, single pass) | **66 / 12 ms** | ~same | diffusion is 133×–665× slower **per frame** at standard T |
-| **Downstream TSTR** (train-on-synthetic Dice) | overtakes raw render on every seed | — | only after matching sector geometry + test-time adaptation; absolute Dice stays low |
+| **Downstream TSTR** (train-on-synthetic Dice) | overtakes raw render on every seed | n/a | only after matching sector geometry + test-time adaptation; absolute Dice stays low |
 
 All numbers are on the **public** [Kaggle *ussimandsegm* (Vitale et al.)](https://www.kaggle.com/datasets/ignaciorlando/ussimandsegm)
 abdominal ultrasound set, with simulator content from open [TotalSegmentator](https://github.com/wasserthal/TotalSegmentator)
@@ -42,7 +42,7 @@ CT (see [Data](#data)).
 ## Repository layout
 
 ```
-src/usbg/            the SonoSPADE code (package name `usbg` = the closed-loop US testbed it lives in)
+src/usbg/            the SonoSPADE code (historical package name, kept so imports match the release)
   texture_gan.py       SonoSPADE generator + trainer + CUT/CycleGAN baselines + inference translators
   segmenter.py         S_US: the free frozen segmenter (pseudo-labels + consistency)
   texture_eval.py      per-tissue metrics (locality, organ-W1, speckle SNR, TSTR)
@@ -102,9 +102,8 @@ python scripts/bench_latency.py ; python scripts/bench_diffusion_latency.py
 ## Closed-loop acquisition RL
 
 The paper reports a brief in-the-loop proof of concept (an agent whose reward is a real-trained organ
-recognizer). The **full** closed-loop RL study — method, seeds, and the multi-organ analysis — is part
-of a **separate follow-up publication** and is not included here; see
-[`scripts/closed_loop_rl/README.md`](scripts/closed_loop_rl/README.md).
+recognizer). The full closed-loop RL study (method, seeds, and the multi-organ analysis) is **not
+included in this release**; see [`scripts/closed_loop_rl/README.md`](scripts/closed_loop_rl/README.md).
 
 ## How to cite
 
@@ -113,7 +112,7 @@ If you use this code or ideas, please cite the paper and link this repository:
 ```bibtex
 @inproceedings{sonospade2026,
   title     = {SonoSPADE: Real-Time, Per-Tissue Ultrasound Texture Synthesis for Closed-Loop Acquisition},
-  author    = {<AUTHORS>},
+  author    = {Intharah, Thanapong and Gao, Zhichao and Dong, Hao},
   booktitle = {Simulation and Synthesis in Medical Imaging (SASHIMI), MICCAI Workshop},
   year      = {2026},
   note      = {Code: https://github.com/tohnperfect/SonoSpade}
@@ -122,7 +121,7 @@ If you use this code or ideas, please cite the paper and link this repository:
 
 ## Limitations
 
-Unpaired training matches per-tissue *statistics*, not exact speckle — this is training texture, not
+Unpaired training matches per-tissue *statistics*, not exact speckle: this is training texture, not
 diagnostic imagery. Acoustically similar soft tissues are near-inseparable in B-mode. Validation is a
 single dataset/anatomy (abdominal Kaggle, 60 annotated real frames). See the paper's Limitations.
 

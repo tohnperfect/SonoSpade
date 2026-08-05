@@ -1,9 +1,10 @@
-"""usbg: us_bmode_gym.
+"""usbg: the SonoSPADE package.
 
-A closed-loop simulated ultrasound acquisition testbed. Couples LOTUS (CT-label to
-B-mode rendering) with MuJoCo (probe pose and contact), driven by an existing RL motion
-policy, auto-labeled by an existing MS-TCN recognizer, producing an (image, action)
-dataset used to behavior-clone an image-conditioned acquisition policy.
+The SonoSPADE per-tissue ultrasound texture stage and its evaluation suite: a physics
+B-mode renderer over CT-derived tissue labels, the dual-input SPADE generator and its
+CUT/CycleGAN baselines, the frozen segmenter that supplies free supervision, and the
+per-tissue metrics. The package name is historical and is kept so imports match the
+released code.
 
 The channels/classes/timing/SE(3) geometry contract is provided by the vendored
 usbg._vendor package (self-contained; see usbg.contracts_bridge).

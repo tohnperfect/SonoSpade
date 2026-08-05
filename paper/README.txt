@@ -1,4 +1,4 @@
-SonoSPADE — MICCAI 2026 SASHIMI submission (Overleaf package)
+SonoSPADE: MICCAI 2026 SASHIMI camera-ready (Overleaf package)
 =============================================================
 
 Open in Overleaf

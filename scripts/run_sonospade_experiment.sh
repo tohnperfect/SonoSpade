@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SonoSPADE proof-of-concept experiment on the USB Gym substrate.
+# SonoSPADE proof-of-concept experiment on the host simulator substrate.
 #
 # Trains every translator on the same real pool, then evaluates them on the same held-out content
 # with the per-tissue metric suite and a held-out-patient proxy-real TSTR test. Resumable: each
