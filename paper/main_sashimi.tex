@@ -34,7 +34,7 @@ A segmenter, pretrained for free on aligned simulator pairs and then frozen, pse
 A single pass runs at $15$ to $85$ frames per second \emph{with no CUDA}, two to three orders of magnitude faster than diffusion. 
 On the public Kaggle abdominal set, relabeling a region changes only that region's texture, while label-free methods do not react at all (label-swap locality ${\approx}\,26$, versus $0$). 
 Per-organ intensity matches real about $2\times$ better than any learned baseline, and structure is preserved $2.4\times$ better; on whole-frame FID/KID it trails by design. 
-In an in-the-loop proof of concept, on an organ-conditioned task scored by a \emph{fixed} real-trained recognizer, the per-tissue reward gives the highest ground-truth liver visibility in all three seeds. Code is released.\footnote{\url{https://github.com/tohnperfect/SonoSpade}}
+In an in-the-loop proof of concept, on an organ-conditioned task scored by a \emph{fixed} real-trained recognizer, the per-tissue reward gives the highest ground-truth liver visibility in all three seeds. Code is available.\footnote{\url{https://github.com/tohnperfect/SonoSpade}}
 \keywords{Ultrasound synthesis \and Semantic image synthesis \and Real-time synthesis \and Closed-loop simulation \and Sim-to-real.}
 \end{abstract}
 
@@ -165,12 +165,12 @@ than outside, from $10.4$ for fat to $60.7$ for bone.
 
 \subsection{Free segmentation supervision}
 Pretrained on the aligned pairs, $S_{US}$ reaches \liverDice{}/\lungDice{}/\vesselDice{} Dice on
-liver/lung/vessels (acoustically distinct) on held-out simulated CT cases. The canonical 13-class macro Dice is
+liver/lung/ vessels (acoustically distinct) on held-out simulated CT cases. The canonical 13-class macro Dice is
 capped at \diceCanon{} by indistinct soft tissues; merging them in the grouped scheme lifts it to
 \diceGroup{} (merged soft-tissue class \softGroup{} versus \softCanon{}), with no change to distinct
 tissues.
 
-\noindent\textbf{How good are the pseudo-labels?} $S_{US}$ is trained only in simulation, yet it is what
+$S_{US}$ is trained only in simulation, yet it is what
 labels the real pool, so its accuracy on real frames bounds how far the discriminator's semantic target can
 be trusted. We ran the same frozen checkpoint on the $60$ annotated real frames, which it never saw. Macro Dice over the five annotated organs is \realDiceLin{}
 for the linear checkpoint that produced the reported pseudo-labels and \realDiceCurvi{} for the
@@ -185,10 +185,10 @@ target; the consistency term uses the exact simulator label and is unaffected (T
 \label{sec:baselines}
 Table~\ref{tab:main} compares raw physics, CycleGAN~\cite{zhu2017cyclegan}, CUT~\cite{park2020cut}, an
 S-CycleGAN-style variant~\cite{song2024scyclegan}, and SonoSPADE on the real Kaggle set.
-\textbf{Structure:} SonoSPADE preserves anatomy far better than any learned translator (edge IoU \iouSono{} versus \iouCUT{}/\iouCyc{} for CUT/CycleGAN, a $2.4\times$ margin): the label-free translators remap the frame to match appearance and drift on structure, while physics-plus-label conditioning keeps anatomy intact. \textbf{Per-organ realism:} We report intensity $W_1$ \emph{restricted to the annotated organ masks}, since the whole-frame score is dominated by the background. 
+SonoSPADE preserves anatomy far better than any learned translator (edge IoU \iouSono{} versus \iouCUT{}/\iouCyc{} for CUT/CycleGAN, a $2.4\times$ margin): the label-free translators remap the frame to match appearance and drift on structure, while physics-plus-label conditioning keeps anatomy intact. 
+We report intensity $W_1$ \emph{restricted to the annotated organ masks}, since the whole-frame score is dominated by the background. 
 Inside the masks, the recolors lose per-tissue fidelity (organ $W_1$ \wCyc{}/\wCUT{} versus \wPhys{} for the render they started from), while SonoSPADE keeps it and is the only method with per-tissue control (locality 26.3 versus $0$). 
-TSTR, train-on-synthetic test-on-real, which trains a segmenter on translated frames and scores it on real ones, is near zero for all linear methods (SonoSPADE lowest, \tstrSono{}), dominated by a linear-versus-curvilinear geometry gap and further
-depressed for SonoSPADE because its conditioning shifts features from what the classifier expects; matching the geometry and adding test-time adaptation reverses the ranking (next).
+TSTR, train-on-synthetic test-on-real, which trains a segmenter on translated frames and scores it on real ones, is near zero for all linear methods (SonoSPADE lowest, \tstrSono{}), for the geometry reason diagnosed in Sec.~\ref{sec:tstr}.
 
 \begin{table}[t]
 \centering
@@ -196,9 +196,7 @@ depressed for SonoSPADE because its conditioning shifts features from what the c
 better); \emph{organ} intensity $W_1$: Wasserstein-1 distance between output and real grayscale
 distributions inside each annotated organ mask, averaged over the four organs meeting the $200$-pixel
 minimum (lower better); label-swap locality ($0$ for label-free translators by construction, higher
-better); TSTR Dice.
-SonoSPADE preserves structure $2.4\times$ better and per-organ intensity about $2\times$ better than any
-learned translator, and is the only method with per-tissue control. The SonoSPADE-curvi row is the same
+better); TSTR Dice. The SonoSPADE-curvi row is the same
 content in the matched sector geometry (Sec.~\ref{sec:tstr}); its TSTR is the five-seed mean from
 Table~\ref{tab:tstr}.}
 \label{tab:main}
@@ -217,10 +215,10 @@ SonoSPADE-curvi        & \iouSonoCurvi & \wSonoCurvi & \locSonoCurvi & \tstrSono
 \end{tabular}
 \end{table}
 
-\paragraph{Whole-frame realism (FID/KID).} These compare the distribution of whole frames to the real pool. SonoSPADE does \emph{not} win whole-frame FID/KID (supplementary
-Table~S1): its scores sit near the untranslated render, above the label-free translators. FID/KID score
-\emph{overall} appearance, which a global tone map matches cheaply and which is blind to whether each organ
-reads correctly.
+\paragraph{Whole-frame realism (FID/KID).} SonoSPADE does \emph{not} win whole-frame FID/KID
+(supplementary Table~S1): its scores sit near the untranslated render, above the label-free translators.
+These score \emph{overall} appearance, which a global tone map matches cheaply and which is blind to
+whether each organ reads correctly.
 
 \subsection{Ablation study}
 Ablating SonoSPADE's terms one at a time (retrained at a fixed budget; supplementary Table~S2), the
@@ -261,10 +259,9 @@ $+$ curvilinear $+$ TENT (B)           & \tstrPhysTent{} {\footnotesize $\pm$\ts
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.80\linewidth]{figures/curvilinear.png}
-\caption{Curvilinear remap (Experiment~A, Sec.~\ref{sec:tstr}). After warping into the measured sector
-geometry, the curvilinear physics render (top), SonoSPADE-curvi (middle), and a real Kaggle frame
-(bottom) share the same sector field.}
+\includegraphics[width=0.70\linewidth]{figures/curvilinear.png}
+\caption{Curvilinear remap (Experiment~A, Sec.~\ref{sec:tstr}). The curvilinear physics render (top),
+SonoSPADE-curvi (middle), and a real Kaggle frame (bottom) share the same sector field.}
 \label{fig:curvi}
 \end{figure}
 
@@ -291,10 +288,8 @@ The bottleneck is the simulator and translator failing to reproduce their appear
 
 \begin{table}[t]
 \centering
-\caption{Organ-conditioned liver acquisition (\rlSeeds{} seeds, held-out CT cases). Top: a fixed
-real-trained recognizer $J$ recognizes SonoSPADE's liver far better than a recolor's (real-data ceiling
-\recCeil{}). Middle: trained under $J$ as reward, SonoSPADE reaches the highest \emph{ground-truth} liver
-visibility (static start \rlStart{}), higher in \rlSeeds{}/\rlSeeds{} seeds.}
+\caption{Organ-conditioned liver acquisition (\rlSeeds{} seeds, held-out CT cases). Real-data ceiling
+\recCeil{}; static start \rlStart{}.}
 \label{tab:organrl}
 \begin{tabular}{lcccc}
 \toprule
@@ -319,6 +314,13 @@ After matching the sector geometry it overtakes the untranslated render on downs
 The motivating application is population-scale abdominal screening, where a deep model already assists diagnosis on real biliary-tract ultrasound~\cite{intharah2023bitnet}. Such systems assume a usable view has been acquired; learning acquisition in simulation targets that upstream step.
 
 \begin{credits}
+\subsubsection{\ackname}
+This research has received funding support from the NSRF via the Program Management
+Unit for Human Resources \& Institutional Development, Research and Innovation [grant
+number B13F680141] and the NSRF via the Research and Innovation Acceleration Agency
+for Competitiveness and Area Development (RCAD) (Program Management Unit for Frontier
+Brainpower and Future Industries) [grant number B13T690002-4].
+
 \subsubsection{\discintname}
 The authors have no competing interests to declare.
 \end{credits}
