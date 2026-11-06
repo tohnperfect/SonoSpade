@@ -2,6 +2,16 @@
 
 **Real-time, GPU-free, per-tissue ultrasound texture synthesis for closed-loop acquisition.**
 
+<p align="center">
+  <img src="media/sonospade_cover.png" width="400"
+       alt="A tissue label slice beside the SonoSPADE ultrasound texture of the same slice">
+  <img src="media/sonospade_thumb.gif" width="400"
+       alt="A physics render and its tissue labels turned into SonoSPADE texture as the probe sweeps">
+</p>
+
+<p align="center"><sub>One patient (gallbladder view), rendered with the checkpoint of the SASHIMI
+paper.</sub></p>
+
 SonoSPADE is a physics-conditioned, *per-tissue* ultrasound texture stage: it refines a physics
 B-mode render into realistic ultrasound under spatially-adaptive conditioning from the **tissue label
 slice**, trained **unpaired with no real annotations**. A single generator pass runs at **15–85 fps
