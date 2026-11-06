@@ -113,15 +113,25 @@ included in this release**; see [`scripts/closed_loop_rl/README.md`](scripts/clo
 
 ## How to cite
 
+The paper is published in the MICCAI 2026 workshop proceedings (11th SASHIMI workshop, LNCS 17258):
+[open-access page](https://papers.miccai.org/miccai-2026-sat/SASHIMI_035.html),
+[PDF](https://papers.miccai.org/miccai-2026-sat/paper/SASHIMI_035.pdf),
+[supplementary material](https://papers.miccai.org/miccai-2026-sat/supp/SASHIMI_035_supp.pdf).
+
 If you use this code or ideas, please cite the paper and link this repository:
 
 ```bibtex
 @inproceedings{sonospade2026,
-  title     = {SonoSPADE: Real-Time, Per-Tissue Ultrasound Texture Synthesis for Closed-Loop Acquisition},
+  title     = {{SonoSPADE}: Real-Time, Per-Tissue Ultrasound Texture Synthesis for Closed-Loop Acquisition},
   author    = {Intharah, Thanapong and Gao, Zhichao and Dong, Hao},
-  booktitle = {Simulation and Synthesis in Medical Imaging (SASHIMI), MICCAI Workshop},
+  booktitle = {Medical Image Computing and Computer Assisted Intervention -- MICCAI 2026 Workshops and
+               Challenges (SASHIMI)},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {17258},
+  publisher = {Springer Nature Switzerland},
+  address   = {Cham},
   year      = {2026},
-  note      = {Code: https://github.com/tohnperfect/SonoSpade}
+  url       = {https://papers.miccai.org/miccai-2026-sat/SASHIMI_035.html}
 }
 ```
 
