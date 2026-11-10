@@ -21,3 +21,6 @@ paper/*.bbl
 !paper/main_sashimi.bbl
 paper/*.blg
 paper/*.synctex.gz
+# downloaded checkpoints (scripts/fetch_weights.py); only the manifest is tracked
+weights/*
+!weights/MANIFEST.json

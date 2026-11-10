@@ -59,9 +59,10 @@ src/usbg/            the SonoSPADE code (historical package name, kept so import
 scripts/             training, evaluation, and experiment drivers
 paper/               SASHIMI submission package: LNCS source + compiled main_sashimi.pdf,
                      supplementary.pdf, figures, bibliography (README.txt = build steps)
-docs/                SONOSPADE.md (method notes)
+docs/                SONOSPADE.md (method notes), WEIGHTS.md (model card for the released checkpoints)
 configs/             sonospade.yaml (hyperparameters)
 data/                README with data-download / regeneration instructions (data itself not shipped)
+weights/             MANIFEST.json (checksums); scripts/fetch_weights.py downloads the checkpoints here
 ```
 
 ## Install
@@ -74,6 +75,26 @@ pip install -e ".[viz]"     # + figures / previews
 Runs on CPU or Apple-Silicon MPS (`export PYTORCH_ENABLE_MPS_FALLBACK=1`); no discrete GPU required.
 The import package is `usbg`; SonoSPADE is `usbg.texture_gan` (+ `usbg.segmenter`).
 
+## Pretrained weights
+
+The trained checkpoints are attached to the
+[v0.2.0 release](https://github.com/tohnperfect/SonoSpade/releases/tag/v0.2.0). The download script
+checks each file's SHA-256 against [`weights/MANIFEST.json`](weights/MANIFEST.json):
+
+```bash
+python scripts/fetch_weights.py --set sashimi   # the paper's checkpoints (4 files, ~141 MB)
+python scripts/fetch_weights.py --set usbgym    # the texture stage USB Gym used (2 files, ~71 MB)
+```
+
+| Set | Generator | Segmenter `S_US` | Use it for |
+|---|---|---|---|
+| SASHIMI paper | `sonospade_sashimi_linear.pt`, `sonospade_sashimi_curvi.pt` | `s_us_sashimi_linear.pt`, `s_us_sashimi_curvi.pt` | this paper's experiments; linear or curvilinear frames |
+| USB Gym | `sonospade_usbgym_curvi_s0.pt` | `s_us_usbgym_curvi_s0.pt` | [USB Gym](https://github.com/tohnperfect/USBGym); its training CTs exclude USB Gym's test patients |
+
+Only the generator is needed to make frames. Training data, intended use, limits and licensing are
+in the model card, [`docs/WEIGHTS.md`](docs/WEIGHTS.md). For research simulation only, not clinical
+use.
+
 ## Quickstart
 
 ```python
@@ -83,21 +104,40 @@ from usbg.texture_gan import load_translator          # dual-input aware loader
 lv  = V.synthetic_phantom()                            # a labeled phantom (no download)
 lab = lv.labels[lv.labels.shape[0] // 2]               # a 2D label slice
 phys = R.render(np.asarray(lab), renderer="physics")   # physics B-mode render
-son  = load_translator("data/dataset/exp_real_sonospade.pt")   # after training (below)
+son  = load_translator("weights/sonospade_sashimi_linear.pt")   # from fetch_weights.py, or your own
 real_like = son.translate_aligned(phys, lab)           # per-tissue-textured frame
 ```
 
 ## Data
 
-Everything runs on **open** datasets; no private data is required or shipped. See
-[`data/README.md`](data/README.md) for one-command download/ingest of the Kaggle *ussimandsegm* real
-ultrasound set and the TotalSegmentator CT content.
+Everything runs on **public** datasets; no private data is required or shipped. See
+[`data/README.md`](data/README.md) for download/ingest of the Kaggle *ussimandsegm* real ultrasound
+set and the TotalSegmentator CT content.
+
+## Train your own
+
+```bash
+export PYTORCH_ENABLE_MPS_FALLBACK=1
+# 1. aligned (physics render, label) pairs from TotalSegmentator CTs in data/raw/totalseg_small/
+python scripts/make_dataset.py --cases s0011 s0058 s0344 s0358 s0461 s0477 s0511 s0513 \
+    --n-per-case 110 --out data/dataset/pairs_med.npz
+# 2. the frozen segmenter S_US (simulated pairs only)
+python scripts/train_segmenter.py --pairs data/dataset/pairs_med.npz --group --out data/dataset/s_us_grouped.pt
+# 3. the real pool and the labelled real test set from Kaggle ussimandsegm
+python scripts/ingest_kaggle_us.py --src /path/to/ussimandsegm
+# 4. SonoSPADE
+python scripts/train_texture_gan.py --variant sonospade --pairs data/dataset/pairs_med.npz \
+    --real-dir data/real/kaggle_vitale/pool --s-us data/dataset/s_us_grouped.pt \
+    --iters 1500 --out data/dataset/exp_real_sonospade.pt
+```
+
+A retrained model is not bit-identical to the released one (random seeds, hardware).
 
 ## Reproduce the paper
 
 ```bash
 export PYTORCH_ENABLE_MPS_FALLBACK=1
-# one-command sim→real head-to-head (S_US -> SonoSPADE + baselines -> per-tissue metrics + FID/KID)
+# after steps 1-4 above: SonoSPADE (+ baselines when their inputs exist) -> per-tissue metrics
 bash scripts/run_sonospade_experiment_real.sh
 # downstream transfer (geometry remap + test-time adaptation)
 python scripts/curvi_warp.py ; python scripts/eval_tta_tent.py

@@ -704,7 +704,7 @@ class TextureTranslator:
         from .render_lotus import get_device
         self.device = device or get_device()
         self.G = _resnet_generator(ngf=ngf, n_blocks=n_blocks).to(self.device)
-        state = torch.load(ckpt_path, map_location=self.device, weights_only=False)
+        state = torch.load(ckpt_path, map_location=self.device, weights_only=True)
         self.G.load_state_dict(state["G_s2r"] if "G_s2r" in state else state)
         self.G.eval()
 
@@ -733,7 +733,7 @@ class SonoSPADETranslator:
         import torch
         from .render_lotus import get_device
         self.device = device or get_device()
-        state = torch.load(ckpt_path, map_location=self.device, weights_only=False)
+        state = torch.load(ckpt_path, map_location=self.device, weights_only=True)
         self.n_classes = state.get("n_classes", 13)
         self.G = _spade_generator(self.n_classes, ngf=state.get("ngf", 32),
                                   n_blocks=state.get("n_blocks", 6),
@@ -779,7 +779,7 @@ def load_translator(ckpt_path, device=None):
     import torch
     from .render_lotus import get_device
     dev = device or get_device()
-    state = torch.load(ckpt_path, map_location=dev, weights_only=False)
+    state = torch.load(ckpt_path, map_location=dev, weights_only=True)
     if "G_spade" in state:
         return SonoSPADETranslator(ckpt_path, device=dev)
     return TextureTranslator(ckpt_path, device=dev)

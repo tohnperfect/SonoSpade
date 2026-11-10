@@ -1,0 +1,59 @@
+{
+  "schema_version": "sonospade-weights-1.0",
+  "release": "v0.2.0",
+  "base_url": "https://github.com/tohnperfect/SonoSpade/releases/download/v0.2.0",
+  "card": "docs/WEIGHTS.md",
+  "files": [
+    {
+      "name": "sonospade_sashimi_linear.pt",
+      "set": "sashimi",
+      "kind": "generator",
+      "geometry": "linear",
+      "bytes": 35930765,
+      "sha256": "489b488552f1fdff133f21812495067051333857e13ab985cb5bcb949fcbf04b",
+      "segmenter": "s_us_sashimi_linear.pt"
+    },
+    {
+      "name": "s_us_sashimi_linear.pt",
+      "set": "sashimi",
+      "kind": "segmenter",
+      "geometry": "linear",
+      "bytes": 34611573,
+      "sha256": "86ff0289943ea6bd3f51d2816226b254a9c4b0299ca58f414cadabc4ce0f6283"
+    },
+    {
+      "name": "sonospade_sashimi_curvi.pt",
+      "set": "sashimi",
+      "kind": "generator",
+      "geometry": "curvilinear",
+      "bytes": 35932665,
+      "sha256": "4c5b2891d888db32c0215222f77b3f3342c85241f63aecd1fe50098f832975aa",
+      "segmenter": "s_us_sashimi_curvi.pt"
+    },
+    {
+      "name": "s_us_sashimi_curvi.pt",
+      "set": "sashimi",
+      "kind": "segmenter",
+      "geometry": "curvilinear",
+      "bytes": 34612425,
+      "sha256": "10aa9103375967ed8827f899435452b91f6311a4afee578fce4320a6d8554148"
+    },
+    {
+      "name": "sonospade_usbgym_curvi_s0.pt",
+      "set": "usbgym",
+      "kind": "generator",
+      "geometry": "curvilinear",
+      "bytes": 35929847,
+      "sha256": "85f91f65cfa97bd35a65eb28f4d7be2d58aa5ae98b162db6440cc21d05c3b804",
+      "segmenter": "s_us_usbgym_curvi_s0.pt"
+    },
+    {
+      "name": "s_us_usbgym_curvi_s0.pt",
+      "set": "usbgym",
+      "kind": "segmenter",
+      "geometry": "curvilinear",
+      "bytes": 34612425,
+      "sha256": "10498d9e6aec7ffb556bf81e9ff8df909d3522a71414d8f45c8ed2dbcb5a41f2"
+    }
+  ]
+}

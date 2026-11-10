@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sonospade"
-version = "0.1.0"
+version = "0.2.0"
 description = "SonoSPADE: real-time, GPU-free, per-tissue ultrasound texture synthesis for closed-loop acquisition"
 readme = "README.md"
 requires-python = ">=3.10"

@@ -13,10 +13,19 @@ TEST=data/eval/kaggle_vitale_test.npz
 mkdir -p outputs/experiment
 
 [ -d "$POOL" ] || { echo "run scripts/ingest_kaggle_us.py first ($POOL missing)"; exit 1; }
+for F in data/dataset/pairs_med.npz data/dataset/s_us_grouped.pt; do
+  [ -f "$F" ] || { echo "$F missing: run steps 1-2 of 'Train your own' in the README first"; exit 1; }
+done
 
 echo "== baseline translators (grayscale) on the Kaggle real pool =="
+# The baselines read simulator frames from data/dataset/usbg.npz, an episode file written by the
+# full testbed's dataset builder, which this release does not include. Without it they are skipped
+# and the evaluation below reports SonoSPADE alone.
 for V in cyclegan cut cyclegan_sc; do
   OUT=data/dataset/exp_real_$V.pt
+  if [ ! -f "$OUT" ] && [ ! -f data/dataset/usbg.npz ]; then
+    echo "  $V: skipped (no data/dataset/usbg.npz)"; continue
+  fi
   [ -f "$OUT" ] || $PY scripts/train_texture_gan.py --variant $V --sim-npz data/dataset/usbg.npz \
       --real-dir "$POOL" --iters 800 --out "$OUT" \
       --preview outputs/experiment/real_${V}_preview.png

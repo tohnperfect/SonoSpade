@@ -205,7 +205,7 @@ class Segmenter:
         import torch
         from .render_lotus import get_device
         dev = device or get_device()
-        ck = torch.load(path, map_location=dev, weights_only=False)
+        ck = torch.load(path, map_location=dev, weights_only=True)
         seg = cls(device=dev, n_classes=ck.get("n_classes", N_LABELS),
                   base=ck.get("base", 32), depth=ck.get("depth", 4),
                   group_map=ck.get("group_map"))
